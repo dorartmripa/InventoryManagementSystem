@@ -2,8 +2,6 @@ import sqlite3
 database = sqlite3.connect("inventory.db")
 cursor = database.cursor()
 
-#HELLO
-
 def sql_database():
    #database = sqlite3.connect("inventory.db")
     #cursor = database.cursor()
