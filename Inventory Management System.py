@@ -54,7 +54,17 @@ def update():
         UPDATE inventory SET supplier = ? WHERE id = ?
         """, (item, id))
     
+    database.commit()
     
+def remove():
+    print("What would you like to remove in your inventory?")
+    id = int(input("What is the ID of the item you would like to remove: "))
+
+    cursor.execute("""
+    DELETE FROM inventory WHERE id = ?
+    """, (id,))
+
+    database.commit()
 
 
 def main():
