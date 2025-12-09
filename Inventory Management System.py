@@ -35,36 +35,84 @@ def add():
 
 
 def update():
-    print("What would you like to update in your inventory?")
-    id = int(input("What is the ID of the item you would like to update: "))
-    item_update = input("What would you like to update [quantity, name, supplier]: ")
-    item = input("Enter the new update of the item: ")
+    while True:
+        print("What would you like to update in your inventory?")
+        id = int(input("What is the ID of the item you would like to update: "))
+        item_update = input("What would you like to update [quantity, name, supplier]: ")
+        item = input("Enter the new update of the item: ")
 
-    if item_update.lower().strip() == "quantity":
-        item = int(item)
         cursor.execute("""
-        UPDATE inventory SET quantity = ? WHERE id = ?
-        """, (item, id))
-    elif item_update.lower().strip() == "name":
-        cursor.execute("""
-        UPDATE inventory SET name = ? WHERE id = ?
-        """, (item, id))
-    else:
-        cursor.execute("""
-        UPDATE inventory SET supplier = ? WHERE id = ?
-        """, (item, id))
-    
-    database.commit()
+        SELECT 1 from inventory WHERE id = ? LIMIT 1
+        """, (id,))
+        exists = cursor.fetchone()
+
+        if exists:
+            if item_update.lower().strip() == "quantity":
+                item = int(item)
+                cursor.execute("""
+                UPDATE inventory SET quantity = ? WHERE id = ?
+                """, (item, id))
+            elif item_update.lower().strip() == "name":
+                cursor.execute("""
+                UPDATE inventory SET name = ? WHERE id = ?
+                """, (item, id))
+            elif item_update.lower().strip() == "supplier":
+                cursor.execute("""
+                UPDATE inventory SET supplier = ? WHERE id = ?
+                """, (item, id))
+            
+            #else:
+                #print("\nOops! That's not a valid option. Try again.\n")
+               # update()
+
+            database.commit()
+            break
+
+        else:
+            print("\nOops! That item does not exist. Try again.\n")
+            update()
     
 def remove():
-    print("What would you like to remove in your inventory?")
-    id = int(input("What is the ID of the item you would like to remove: "))
+    while True:
+        print("What would you like to remove in your inventory?")
+        id = int(input("What is the ID of the item you would like to remove: "))
+
+        cursor.execute("""
+        SELECT 1 from inventory WHERE id = ? LIMIT 1
+        """, (id,))
+        exists = cursor.fetchone()
+
+        if exists:
+            cursor.execute("""
+            DELETE FROM inventory WHERE id = ?
+            """, (id,))
+            database.commit()
+
+            break
+        else:
+            print("\nOops! That item does not exist. Try again.\n")
+            remove()
+
+def search():
+    print("What would you like to search for in your inventory?")
+    name = input("Enter the name of the item(s) you want to search for: ").strip()
 
     cursor.execute("""
-    DELETE FROM inventory WHERE id = ?
-    """, (id,))
+    SELECT * FROM inventory 
+    WHERE name LIKE ?
+    """, (f"%{name}%",))
 
-    database.commit()
+    results = cursor.fetchall()
+
+    if results:
+        print(f"Items in your inventory that match '{name}':")
+        for result in results:
+            print(result)
+    else:
+        print("\nOops! That item does not exist. Try again.\n")
+        search()
+
+
 
 
 def main():
