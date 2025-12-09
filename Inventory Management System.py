@@ -19,7 +19,7 @@ def sql_database():
     database.commit()
 
 def add():
-    print("What about you like to add to your inventory?")
+    print("What would you like to add to your inventory?")
     print("Enter the following: ")
     name = input("Name of the product: ")
     quantity = int(input("Quantity of the product: "))
@@ -32,6 +32,28 @@ def add():
     """, (name, quantity, supplier, last_restock))
     
     database.commit()
+
+
+def update():
+    print("What would you like to update in your inventory?")
+    id = int(input("What is the ID of the item you would like to update: "))
+    item_update = input("What would you like to update [quantity, name, supplier]: ")
+    item = input("Enter the new update of the item: ")
+
+    if item_update.lower().strip() == "quantity":
+        item = int(item)
+        cursor.execute("""
+        UPDATE inventory SET quantity = ? WHERE id = ?
+        """, (item, id))
+    elif item_update.lower().strip() == "name":
+        cursor.execute("""
+        UPDATE inventory SET name = ? WHERE id = ?
+        """, (item, id))
+    else:
+        cursor.execute("""
+        UPDATE inventory SET supplier = ? WHERE id = ?
+        """, (item, id))
+    
     
 
 
