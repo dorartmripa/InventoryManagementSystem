@@ -1,9 +1,9 @@
 import sqlite3
 
-database = sqlite3.connect("inventory.db")
-cursor = database.cursor()
+database = sqlite3.connect("inventory.db") #Connects to the database
+cursor = database.cursor() #Creates a cursor to execute SQL commands
 
-def sql_database():
+def sql_database(): #Creates database table if it doesn't exist
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS inventory (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -12,108 +12,116 @@ def sql_database():
         supplier TEXT,
         last_restock TEXT
     )
-    """)
+    """) #Creates table if it doesn't exist
 
-    database.commit()
+    database.commit() #Save changes
 
-def add():
+def add(): #Adds new item to the database
     print("\nWhat would you like to add to your inventory?")
     print("Enter the following: ")
     name = input("Name of the product: ")
-    quantity = int(input("Quantity of the product: "))
+
+    while True: #loops until a number is entered
+        try:
+            quantity = int(input("Quantity of the product: "))
+            break #breaks out of loop if a number was entered
+        except ValueError: #Catches error if user didn't eneter a number
+            print("\nOops! Please enter a number. Try again.")
+
     supplier = input("Name of the supplier: ")
     last_restock = input("Date of the last restock DD/MM/YYYY: ")
     
     cursor.execute("""
     INSERT INTO inventory (name, quantity, supplier, last_restock)
     VALUES (?, ?, ?, ?)
-    """, (name, quantity, supplier, last_restock))
+    """, (name, quantity, supplier, last_restock)) #Adds the new item to the database
     
-    database.commit()
+    database.commit() #Save changes
     print("\nItem added successfully!\n")
 
-def update():
-    while True:
-        while True:
+def update(): #Updates item by id 
+    while True: #loops until a item is updated
+        while True: #loops until a number is entered
             try:
                 print("\nWhat would you like to update in your inventory?")
                 id = int(input("What is the ID of the item you would like to update: "))
-                break
-            except ValueError:
+                break #breaks out of loop if a number was entered
+            except ValueError: #Catches error if user didn't eneter a number
                 print("\nOops! Please enter a number. Try again.")
 
         cursor.execute("""
         SELECT 1 from inventory WHERE id = ? LIMIT 1
-        """, (id,))
-        exists = cursor.fetchone()
+        """, (id,)) #Finds the first item with the id number entered by user
+        exists = cursor.fetchone() #Gets the matching result
 
-        if not exists:
+        if not exists: #Checks if no matching items were found
             print("\nOops! That item does not exist. Try again.\n")
-            continue
+            continue #Restart the loop to ask for input again
 
-        while True:
+        while True: #loops until a valid option is enetered
             item_update = input("What would you like to update [quantity, name, supplier, last restock]: ")
 
-            if item_update.lower().strip() == "quantity":
+            if item_update.lower().strip() == "quantity": #Checks if user entered quantity
                 item = input("Enter the new *quantity* for this item: ")
                 item = int(item)
                 cursor.execute("""
                 UPDATE inventory SET quantity = ? WHERE id = ?
-                """, (item, id))
-            elif item_update.lower().strip() == "name":
+                """, (item, id)) #Updates the quantity of the item
+            elif item_update.lower().strip() == "name": #Checks if user entered name
                 item = input("Enter the new *name* for this item: ")
                 cursor.execute("""
                 UPDATE inventory SET name = ? WHERE id = ?
-                """, (item, id))
-            elif item_update.lower().strip() == "supplier":
+                """, (item, id)) #Updates the name of the item
+            elif item_update.lower().strip() == "supplier": #Checks if user entered supplier
                 item = input("Enter the new *supplier name* for this item: ")
                 cursor.execute("""
                 UPDATE inventory SET supplier = ? WHERE id = ?
-                """, (item, id))
-            elif item_update.lower().strip() == "last restock":
+                """, (item, id)) #Updates the supplier of the item
+            elif item_update.lower().strip() == "last restock": #Checks if user entered last restock
                 item = input("Enter the new *last restock date* (DD/MM/YYYY): ")
                 cursor.execute("""
                 UPDATE inventory SET last_restock = ? WHERE id = ?
-                """, (item, id))
+                """, (item, id)) #Updates the last restock date of the item
             else:
                 print("\nOops! That's not a valid option. Try again.\n")
-                continue
+                continue #Restart the loop to ask for input again
             
-            break
+            break #breaks out of loop if a valid option was entered
 
-        database.commit()
+        database.commit() #Save changes
         print("\nItem updated successfully!\n")
-        break
+        break #Exit the loop after updating the item
 
-def remove():
-    while True:
-        while True:
+def remove(): #Removes item by id 
+    while True: #loops until a valid item is entered
+        while True: #loops until a number is entered
             try:
                 print("\nWhat would you like to remove in your inventory?")
                 id = int(input("What is the ID of the item you would like to remove: "))
-                break
-            except ValueError:#Ctaches error if user didn't eneter a number
+                break #breaks out of loop if a number was entered
+            except ValueError: #Catches error if user didn't eneter a number
                 print("\nOops! Please enter a number. Try again.")
 
         cursor.execute("""
         SELECT 1 from inventory WHERE id = ? LIMIT 1
-        """, (id,))
-        exists = cursor.fetchone()
+        """, (id,)) #Finds the first item with the id number entered by user
+        exists = cursor.fetchone() #Gets the matching result
 
-        if not exists:
+
+        if not exists: #Checks if no matching items were found
             print("\nOops! That item does not exist. Try again.\n")
-            continue
+            continue #Restart the loop to ask for input again
 
         cursor.execute("""
         DELETE FROM inventory WHERE id = ?
-        """, (id,))
-        database.commit()
+        """, (id,)) #Deletes the item with the id number entered
+        database.commit() #Saves changes
         print("\nItem removed successfully!\n")
 
-        break
+        break #Exit the loop after deleting the item
 
 def search(): #Search for items by name and display the results
-    while True:
+    while True: #loops until a valid item is entered
         print("\nWhat would you like to search for in your inventory?")
         name = input("Enter the name of the item(s) you want to search for: ").strip()
 
@@ -126,7 +134,7 @@ def search(): #Search for items by name and display the results
 
         if not results: #Checks if no matching items were found
             print("\nOops! That item does not exist. Try again.\n")
-            continue
+            continue #Restart the loop to ask for input again
 
         print(f"\nItems in your inventory that match '{name}':")
 
@@ -137,7 +145,7 @@ def search(): #Search for items by name and display the results
         for result in results: #Goes through each row in results and prints it out
             print(result)
         
-        break
+        break #Exit the loop after showing the results
 
 def low_stock(): #Prints items in the database with quantity lower than the number the user entered
     while True: #loops until a number is entered
@@ -149,14 +157,14 @@ def low_stock(): #Prints items in the database with quantity lower than the numb
 
     cursor.execute("""
     SELECT * FROM inventory WHERE quantity < ?
-    """, (low_stock,))
+    """, (low_stock,)) #Search for items that has less than the quantity number entered
 
-    results = cursor.fetchall()
+    results = cursor.fetchall() #Gets all the matching results
 
     print(f"\nItems in your inventory that are less than {low_stock}")
 
-    cursor.execute("SELECT * FROM inventory")
-    columns = [description[0] for description in cursor.description]
+    cursor.execute("SELECT * FROM inventory") #Gets all the items in the inventory database
+    columns = [description[0] for description in cursor.description] #Gets the column names of the database
     print(f"\n{columns}")
 
     for result in results:
@@ -208,13 +216,13 @@ def main():
             yes_or_no = input("Do you want to perform another inventory action? (yes/no): ").strip().lower()
 
             if yes_or_no in ["yes", "no"]:
-                break
+                break #Exits loop if user entered a valid option
 
         if yes_or_no == "no": #ends code if user entered no
             print("\nThank you for using Inventory Management System!\n")
-            database.close()
-            break
+            database.close() #Closes connection to the database
+            break #Exits the loop to end the program
 
-if __name__ == "__main__":
+if __name__ == "__main__": #Run only when the file is executed directly
     main()
 
