@@ -92,7 +92,7 @@ def remove():
                 print("\nWhat would you like to remove in your inventory?")
                 id = int(input("What is the ID of the item you would like to remove: "))
                 break
-            except ValueError:
+            except ValueError:#Ctaches error if user didn't eneter a number
                 print("\nOops! Please enter a number. Try again.")
 
         cursor.execute("""
@@ -112,7 +112,7 @@ def remove():
 
         break
 
-def search():
+def search(): #Search for items by name and display the results
     while True:
         print("\nWhat would you like to search for in your inventory?")
         name = input("Enter the name of the item(s) you want to search for: ").strip()
@@ -120,51 +120,55 @@ def search():
         cursor.execute("""
         SELECT * FROM inventory 
         WHERE name LIKE ?
-        """, (f"%{name}%",))
+        """, (f"%{name}%",)) #Search for items that contains name in the database
 
-        results = cursor.fetchall()
+        results = cursor.fetchall() #Gets all the matching results
 
-        if not results:
+        if not results: #Checks if no matching items were found
             print("\nOops! That item does not exist. Try again.\n")
             continue
 
         print(f"\nItems in your inventory that match '{name}':")
 
-        cursor.execute("SELECT * FROM inventory")
-        columns = [description[0] for description in cursor.description]
+        cursor.execute("SELECT * FROM inventory") #Gets all the items in the inventory database
+        columns = [description[0] for description in cursor.description] #Gets the column names of the database
         print(f"\n{columns}")
 
-        for result in results:
+        for result in results: #Goes through each row in results and prints it out
             print(result)
         
         break
 
-def low_stock():
-    while True:
+def low_stock(): #Prints items in the database with quantity lower than the number the user entered
+    while True: #loops until a number is entered
         try:
             low_stock = int(input("\nCheck for items with quantity lower than: "))
-            break
-        except ValueError:
+            break #breaks out of loop if a number was entered
+        except ValueError: #Catches error if user didn't eneter a number
             print("\nOops! Please enter a number. Try again.")
 
     cursor.execute("""
     SELECT * FROM inventory WHERE quantity < ?
     """, (low_stock,))
 
-    print(f"\nItems in your inventory that are less than {low_stock}")
     results = cursor.fetchall()
+
+    print(f"\nItems in your inventory that are less than {low_stock}")
+
+    cursor.execute("SELECT * FROM inventory")
+    columns = [description[0] for description in cursor.description]
+    print(f"\n{columns}")
+
     for result in results:
             print(result)
 
-
-
 def main():
     choices = ['add', 'update', 'remove', 'search', 'low stock']
-    sql_database()
+    sql_database() #creates the sqlite database if not created already
 
     print("\n--- WELCOME TO INVENTORY MANAGEMENT SYSTEM ---\n")
 
-    while True:
+    while True: #loops until user doesn't want to make any more changes to the database
         print("To make a change to your inventory, type one of the following options:")
         print("- Add")
         print("- Update")
@@ -174,7 +178,7 @@ def main():
 
         action = input("Enter your choice: ").strip().lower()
 
-        if action not in choices:
+        if action not in choices: #checks if user entered a valid option
             while True:
                 print("\nOops! That's not a valid option. Try again.\n")
                 print("Enter one of the following options: ")
@@ -186,27 +190,30 @@ def main():
 
                 action = input("Enter your choice: ").strip().lower()
 
-                if action in choices:
+                if action in choices: #breaks out of the loop if a valid option was entered
                     break
-    
-        if action == choices[0]:
-            add()
-        elif action == choices[1]:
-            update()
-        elif action == choices[2]:
-            remove()
-        elif action == choices[3]:
-            search()
-        else:
-            low_stock()
         
-        yes_or_no = input("Do you want to perform another inventory action? (yes/no): ").strip().lower()
+        if action == choices[0]: #calls add() if user entered add
+            add()
+        elif action == choices[1]: #calls update() if user entered update
+            update()
+        elif action == choices[2]: #calls remove() if user entered remove
+            remove()
+        elif action == choices[3]: #calls search() if user entered search
+            search()
+        else: #calls low_stock() by default since code makes sure it user enters a valid option
+            low_stock()
 
-        if yes_or_no == "no":
+        while True: #loops until user entered yer or no
+            yes_or_no = input("Do you want to perform another inventory action? (yes/no): ").strip().lower()
+
+            if yes_or_no in ["yes", "no"]:
+                break
+
+        if yes_or_no == "no": #ends code if user entered no
             print("\nThank you for using Inventory Management System!\n")
             database.close()
             break
-
 
 if __name__ == "__main__":
     main()
