@@ -201,28 +201,28 @@ def main():
                 if action in choices: #breaks out of the loop if a valid option was entered
                     break
         
-        if action == choices[0]: #calls add() if user entered add
+        if action == choices[0]: #Calls add() if user entered add
             add()
-        elif action == choices[1]: #calls update() if user entered update
+        elif action == choices[1]: #Calls update() if user entered update
             update()
-        elif action == choices[2]: #calls remove() if user entered remove
+        elif action == choices[2]: #Calls remove() if user entered remove
             remove()
-        elif action == choices[3]: #calls search() if user entered search
+        elif action == choices[3]: #Calls search() if user entered search
             search()
-        else: #calls low_stock() by default since code makes sure it user enters a valid option
+        else: #Calls low_stock() by default since code makes sure it user enters a valid option
             low_stock()
 
-        while True: #loops until user entered yer or no
+        while True: #Loops until user entered yer or no
             yes_or_no = input("Do you want to perform another inventory action? (yes/no): ").strip().lower()
 
             if yes_or_no in ["yes", "no"]:
                 break #Exits loop if user entered a valid option
 
-        if yes_or_no == "no": #ends code if user entered no
+        if yes_or_no == "no": #Ends code if user entered no
             print("\nThank you for using Inventory Management System!\n")
             database.close() #Closes connection to the database
             break #Exits the loop to end the program
 
-if __name__ == "__main__": #Run only when the file is executed directly
+if __name__ == "__main__": #Run only when the file is executed directly.
     main()
 
