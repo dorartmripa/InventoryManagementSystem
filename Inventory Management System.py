@@ -41,13 +41,12 @@ def add(): #Adds new item to the database
 
 def update(): #Updates item by id 
     while True: #loops until a item is updated
-        while True: #loops until a number is entered
-            try:
-                print("\nWhat would you like to update in your inventory?")
-                id = int(input("What is the ID of the item you would like to update: "))
-                break #breaks out of loop if a number was entered
-            except ValueError: #Catches error if user didn't eneter a number
+        try:
+            print("\nWhat would you like to update in your inventory?")
+            id = int(input("What is the ID of the item you would like to update: "))
+        except ValueError: #Catches error if user didn't eneter a number
                 print("\nOops! Please enter a number. Try again.")
+                continue #Restart the loop to ask for input again
 
         cursor.execute("""
         SELECT 1 from inventory WHERE id = ? LIMIT 1
@@ -94,19 +93,17 @@ def update(): #Updates item by id
 
 def remove(): #Removes item by id 
     while True: #loops until a valid item is entered
-        while True: #loops until a number is entered
-            try:
-                print("\nWhat would you like to remove in your inventory?")
-                id = int(input("What is the ID of the item you would like to remove: "))
-                break #breaks out of loop if a number was entered
-            except ValueError: #Catches error if user didn't eneter a number
-                print("\nOops! Please enter a number. Try again.")
+        try:
+            print("\nWhat would you like to remove in your inventory?")
+            id = int(input("What is the ID of the item you would like to remove: "))
+        except ValueError: #Catches error if user didn't eneter a number
+            print("\nOops! Please enter a number. Try again.")
+            continue #Restart the loop to ask for input again
 
         cursor.execute("""
         SELECT 1 from inventory WHERE id = ? LIMIT 1
         """, (id,)) #Finds the first item with the id number entered by user
         exists = cursor.fetchone() #Gets the matching result
-
 
         if not exists: #Checks if no matching items were found
             print("\nOops! That item does not exist. Try again.\n")
