@@ -149,4 +149,6 @@ If you want help implementing persistence, tests, packaging, or CI, reply with w
 
 For issues, questions, or suggestions, please open an issue on GitHub.
 
-Developed by Dorart
+---
+
+**Developed by Dorart**
