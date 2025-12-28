@@ -144,3 +144,9 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 ## Contact
 
 If you want help implementing persistence, tests, packaging, or CI, reply with which item to do next (for example: `A` — add `LICENSE`, `B` — add example `inventory.json`, `C` — persist to SQLite, `D` — add CLI mode). I will implement the chosen item and update the repository.
+
+## Support
+
+For issues, questions, or suggestions, please open an issue on GitHub.
+
+Developed by Dorart
