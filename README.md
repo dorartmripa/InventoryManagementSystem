@@ -1,102 +1,120 @@
-
 # Inventory Management System
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
-A small, console-based Python inventory script designed for learning, demonstrations, and lightweight use-cases.
-
-This repository contains [Inventory Management System.py](Inventory Management System.py), a single-file script that provides basic inventory operations such as adding items, updating quantities, and removing items. The script is intentionally simple so it can be adapted to use CSV/JSON/SQLite storage or repackaged as a CLI.
-
-**Project goals**
-
-- Provide a minimal, easy-to-read example of inventory logic in Python
-- Be a starting point for adding persistence, tests, and automation
-- Demonstrate common inventory operations and simple data models
+A Python-based inventory management application designed to simplify stock tracking, product management, and restocking operations for small businesses or warehouses.
 
 ## Features
 
-- Add new inventory items (SKU/ID, name, quantity, optional price/notes)
-- Update item quantities (increase/decrease)
-- Remove items from inventory
-- Simple console menu for interactive usage
+### Product Management
 
-## Requirements
+- Add new products with details (name, quantity, supplier, last restock date)
+- Update product information or stock levels
+- Remove products from the inventory
+- Search and retrieve product records
+- Track low-stock items for timely restocking
 
-- Python 3.8 or newer
+### Stock Tracking
 
-## Quickstart
+- Monitor inventory levels in real-time
+- Set alerts for products below a specified threshold
+- Maintain historical data of restock dates
+- Track suppliers for each product
 
-1. Clone the repository and change into the folder:
+## Database Structure
 
-```powershell
-git clone <your-repo-url>
-cd InventoryManagementSystem
+The system uses SQLite with the following core table:
+
+**inventory** - Stores product details, quantities, suppliers, and restock dates
+
+```sql
+CREATE TABLE IF NOT EXISTS inventory (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    quantity INTEGER,
+    supplier TEXT,
+    last_restock TEXT
+)
 ```
 
-2. (Optional) create and activate a virtual environment:
+Foreign key constraints are not needed as this is a single-table system, keeping it simple and lightweight.
 
-```powershell
-python -m venv venv
-.\venv\Scripts\Activate.ps1
+## User Roles & Access Control
+
+**Admin/Staff:** Full access to add, update, remove, and check stock levels
+
+## Getting Started
+
+### Requirements
+
+- Python 3.7+
+- SQLite3 (included with Python)
+
+### Installation
+
+```bash
+git clone https://github.com/yourusername/inventory-management-system.git
+cd inventory-management-system
 ```
 
-3. Run the script:
+### Running the Application
 
-```powershell
+```bash
 python "Inventory Management System.py"
 ```
 
-The script will run in the console and present a menu. Follow on-screen prompts to add, edit, or remove items.
+The application will:
 
-## Example usage
+- Initialize the SQLite database (inventory.db) on first run
+- Create the inventory table if it doesn't exist
+- Display a menu-driven interface for inventory operations
 
-Add an item (example interaction):
+## Usage
 
-- Choose `Add item`
-- Enter SKU: `ABC-001`
-- Enter name: `Widget`
-- Enter quantity: `10`
-- Enter price: `9.99` (optional)
+The application provides an interactive menu for:
 
-Update quantity:
+- **Add Products** - Enter new products with details
+- **Update Products** - Modify stock levels, supplier info, or product details
+- **Remove Products** - Delete products from inventory
+- **Check Low Stocks** - Identify products that need restocking
 
-- Choose `Update item`
-- Enter SKU: `ABC-001`
-- Enter quantity change: `-2` (to reduce stock)
+## Key Features
 
-Remove an item:
+- ✅ Data Validation - Ensures correct input for quantities and dates
+- ✅ Low Stock Alerts - Quickly identify products that need restocking
+- ✅ Historical Tracking - Maintains last restock date for reference
+- ✅ Interactive Menu - Easy-to-use command-line interface
 
-- Choose `Remove item`
-- Enter SKU: `ABC-001`
+## Technical Stack
 
-If you'd like, I can add a non-interactive mode that accepts command-line arguments for scripting.
+- **Language:** Python 3
+- **Database:** SQLite3
+- **Architecture:** Console-based application with modular functions
+- **Interface:** Interactive command-line menu system
 
-## Data / Storage suggestions
+## Future Enhancements
 
-The script may store data in memory only. Recommended persistence options:
+Potential future features:
 
-- JSON file — easy to inspect and portable
-- CSV file — simple tabular export/import
-- SQLite — recommended when you need reliable, multi-session storage
+- Web or GUI interface for easier management
+- Automatic low-stock notifications
+- Multi-user access with permissions
+- Reports on stock trends and supplier performance
+- Integration with barcode scanners
 
-Example JSON record:
+## License
 
-```json
-{
-  "sku": "ABC-001",
-  "name": "Widget",
-  "quantity": 12,
-  "price": 9.99,
-  "notes": "Top seller"
-}
-```
+This project is open source and available under the MIT License.
 
-CSV example header:
+## Contributing
 
-```
-sku,name,quantity,price,notes
-ABC-001,Widget,12,9.99,Top seller
-```
+Contributions are welcome! Feel free to submit a Pull Request with improvements, bug fixes, or new features.
+
+## Support
+
+For issues, questions, or suggestions, please open an issue on GitHub.
+
+---
+
+**Developed by Dorart**
 
 ## Extending this project
 
