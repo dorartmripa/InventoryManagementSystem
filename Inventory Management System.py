@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import datetime
 
 database = sqlite3.connect("inventory.db") #Connects to the database
 cursor = database.cursor() #Creates a cursor to execute SQL commands
@@ -17,9 +18,18 @@ def sql_database(): #Creates database table if it doesn't exist
     database.commit() #Save changes
 
 def add(): #Adds new item to the database
-    print("\nWhat would you like to add to your inventory?")
-    print("Enter the following: ")
-    name = input("Name of the product: ")
+    while True: 
+        print("\nWhat would you like to add to your inventory?")
+        print("Enter the following: ")
+        name = input("Name of the product: ").strip().capitalize()
+
+        cursor.execute("SELECT 1 FROM inventory WHERE name = ? LIMIT 1", (name,)) #Checks if the item already exists in the database
+        existing_name  = cursor.fetchone() #Gets the matching result
+
+        if existing_name: #Checks if a matching item was found
+            print("\nOops! That item already exists in the inventory. Try again.")
+            continue #Restart the loop to ask for input again
+        break #breaks out of loop if a valid name was entered
 
     while True: #loops until a number is entered
         try:
@@ -28,8 +38,15 @@ def add(): #Adds new item to the database
         except ValueError: #Catches error if user didn't eneter a number
             print("\nOops! Please enter a number. Try again.")
 
-    supplier = input("Name of the supplier: ")
-    last_restock = input("Date of the last restock DD/MM/YYYY: ")
+    supplier = input("Name of the supplier: ").strip().capitalize()
+
+    while True:
+        try:
+            last_restock = input("Enter appointment date (DD/MM/YYYY): ")
+            datetime.strptime(last_restock, "%d/%m/%Y") #Validates the date format
+            break
+        except ValueError:
+            print("\nInvalid date format!\n")
     
     cursor.execute("""
     INSERT INTO inventory (name, quantity, supplier, last_restock)
@@ -61,31 +78,49 @@ def update(): #Updates item by id
             item_update = input("What would you like to update [quantity, name, supplier, last restock]: ")
 
             if item_update.lower().strip() == "quantity": #Checks if user entered quantity
-                item = input("Enter the new *quantity* for this item: ")
-                item = int(item)
-                cursor.execute("""
-                UPDATE inventory SET quantity = ? WHERE id = ?
-                """, (item, id)) #Updates the quantity of the item
+
+                while True: #loops until a number is entered
+                    try:
+                        item = int(input("Enter the new *quantity* for this item: "))
+                        break #breaks out of loop if a number was entered
+                    except ValueError:
+                        print("\nOops! Please enter a number. Try again.")
+
             elif item_update.lower().strip() == "name": #Checks if user entered name
-                item = input("Enter the new *name* for this item: ")
-                cursor.execute("""
-                UPDATE inventory SET name = ? WHERE id = ?
-                """, (item, id)) #Updates the name of the item
+
+                while True:
+                    item = input("Enter the new *name* for this item: ").strip().capitalize()
+
+                    cursor.execute("SELECT 1 FROM inventory WHERE name = ? LIMIT 1", (name,)) #Checks if the item already exists in the database
+                    existing_name  = cursor.fetchone() #Gets the matching result
+
+                    if existing_name: #Checks if a matching item was found
+                        print("\nOops! That item already exists in the inventory. Try again.")
+                        continue #Restart the loop to ask for input again
+                    break #breaks out of loop if a valid name was entered
+
             elif item_update.lower().strip() == "supplier": #Checks if user entered supplier
-                item = input("Enter the new *supplier name* for this item: ")
-                cursor.execute("""
-                UPDATE inventory SET supplier = ? WHERE id = ?
-                """, (item, id)) #Updates the supplier of the item
+
+                item = input("Enter the new *supplier name* for this item: ").strip().capitalize()
+
             elif item_update.lower().strip() == "last restock": #Checks if user entered last restock
-                item = input("Enter the new *last restock date* (DD/MM/YYYY): ")
-                cursor.execute("""
-                UPDATE inventory SET last_restock = ? WHERE id = ?
-                """, (item, id)) #Updates the last restock date of the item
+                while True:
+                    try:
+                        item = input("Enter appointment date (DD/MM/YYYY): ")
+                        datetime.strptime(item, "%d/%m/%Y") #Validates the date format
+                        break
+                    except ValueError:
+                        print("\nInvalid date format!\n")
+
             else:
                 print("\nOops! That's not a valid option. Try again.\n")
                 continue #Restart the loop to ask for input again
             
             break #breaks out of loop if a valid option was entered
+
+        cursor.execute(f"""
+                UPDATE inventory SET {item_update} = ? WHERE id = ?
+                """, (item, id))
 
         database.commit() #Save changes
         print("\nItem updated successfully!\n")
